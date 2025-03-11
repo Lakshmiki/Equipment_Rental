@@ -1,0 +1,148 @@
+{% extends 'admin_dashboard.html' %}
+ {% block content %}
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Platform Settings</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center mb-4">Platform Settings</h1>
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Rental Pricing</h5>
+        <pre>{{ settings.rental_pricing|pprint }}</pre>
+      </div>
+    </div>
+    <div class="card mt-4">
+      <div class="card-body">
+        <h5 class="card-title">Commission Rate</h5>
+        <p>{{ settings.commission_rate }}%</p>
+      </div>
+    </div>
+    <div class="card mt-4">
+      <div class="card-body">
+        <h5 class="card-title">Promotional Campaigns</h5>
+        <pre>{{ settings.promotional_campaigns|pprint }}</pre>
+      </div>
+    </div>
+    <div class="card mt-4">
+      <div class="card-body">
+        <h5 class="card-title">Email Settings</h5>
+        <pre>{{ settings.email_settings|pprint }}</pre>
+      </div>
+    </div>
+    <div class="card mt-4">
+      <div class="card-body">
+        <h5 class="card-title">Booking Rules</h5>
+        <p>{{ settings.booking_rules }}</p>
+      </div>
+    </div>
+  </div>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> {% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Platform Settings</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(to right, #141e30, #243b55);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      max-width: 800px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease-in-out;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #ffcc70;
+    }
+    .pre-container, pre {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 10px;
+      border-radius: 8px;
+      font-family: "Courier New", monospace;
+      color: #ffd700;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container mt-5">
+    <h1 class="text-center mb-4">Platform Settings</h1>
+
+    <div class="card p-3">
+      <div class="card-body">
+        <h5 class="card-title">Rental Pricing</h5>
+        <div class="pre-container">
+          <pre>{{ settings.rental_pricing|pprint }}</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-4 p-3">
+      <div class="card-body">
+        <h5 class="card-title">Commission Rate</h5>
+        <p class="text-light">{{ settings.commission_rate }}%</p>
+      </div>
+    </div>
+
+    <div class="card mt-4 p-3">
+      <div class="card-body">
+        <h5 class="card-title">Promotional Campaigns</h5>
+        <div class="pre-container">
+          <pre>{{ settings.promotional_campaigns|pprint }}</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-4 p-3">
+      <div class="card-body">
+        <h5 class="card-title">Email Settings</h5>
+        <div class="pre-container">
+          <pre>{{ settings.email_settings|pprint }}</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-4 p-3">
+      <div class="card-body">
+        <h5 class="card-title">Booking Rules</h5>
+        <p class="text-light">{{ settings.booking_rules }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+{% endblock %}

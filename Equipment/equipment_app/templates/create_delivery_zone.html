@@ -1,0 +1,42 @@
+{% extends 'admin_dashboard.html' %}
+ {% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Delivery Zone</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">Create Delivery Zone</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.zone_name.label_tag }}
+                {{ form.zone_name }}
+            </div>
+            <div class="form-group">
+                {{ form.city.label_tag }}
+                {{ form.city }}
+            </div>
+            <div class="form-group">
+                {{ form.zip_code.label_tag }}
+                {{ form.zip_code }}
+            </div>
+            <div class="form-group">
+                {{ form.delivery_fee.label_tag }}
+                {{ form.delivery_fee }}
+            </div>
+            <div class="form-group form-check">
+                {{ form.is_active }}
+                {{ form.is_active.label_tag }}
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="{% url 'manage_delivery_zone' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>
+{% endblock %}

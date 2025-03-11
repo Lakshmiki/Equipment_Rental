@@ -1,0 +1,1214 @@
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RentEase Admin Dashboard</title>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --success: #0bb4aa;
+            --danger: #ef476f;
+            --warning: #ffd166;
+            --info: #4cc9f0;
+            --dark: #212529;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --gray-light: #e9ecef;
+            --body-bg: #f7f7fc;
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.01);
+            --border-radius: 12px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--body-bg);
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        ul {
+            list-style: none;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: linear-gradient(180deg, var(--secondary), var(--primary));
+            position: fixed;
+            left: 0;
+            top: 0;
+            color: white;
+            z-index: 100;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-header {
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            padding: 0 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        
+        .nav-links {
+            padding: 20px 0;
+            overflow-y: auto;
+            height: calc(100vh - var(--header-height));
+        }
+        
+        .nav-links li {
+            padding: 12px 25px;
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .nav-links li:hover, .nav-links li.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid white;
+        }
+        
+        .nav-links li i {
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+        
+        .header {
+            height: var(--header-height);
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+        
+        .search-bar {
+            background-color: var(--gray-light);
+            border-radius: 50px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            width: 300px;
+        }
+        
+        .search-bar input {
+            background: transparent;
+            border: none;
+            outline: none;
+            padding: 5px 10px;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .notification, .profile {
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .notification i, .profile i {
+            font-size: 1.3rem;
+            color: var(--gray);
+        }
+        
+        .notification-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        /* Dashboard Content Styles */
+        .dashboard-content {
+            padding: 30px;
+        }
+        
+        .page-title {
+            margin-bottom: 25px;
+            font-weight: 600;
+            font-size: 1.8rem;
+            color: var(--secondary);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .users .stat-icon { background-color: var(--primary); }
+        .equipment .stat-icon { background-color: var(--success); }
+        .bookings .stat-icon { background-color: var(--warning); }
+        .revenue .stat-icon { background-color: var(--info); }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .stat-change {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+        
+        .positive { color: var(--success); }
+        .negative { color: var(--danger); }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .card-body {
+            padding: 25px;
+        }
+        
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        th {
+            font-weight: 600;
+            color: var(--gray);
+        }
+        
+        tbody tr:hover {
+            background-color: var(--gray-light);
+        }
+        
+        .status {
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+        
+        .status-pending { background-color: rgba(255, 209, 102, 0.2); color: #d99000; }
+        .status-approved { background-color: rgba(11, 180, 170, 0.2); color: var(--success); }
+        .status-rejected { background-color: rgba(239, 71, 111, 0.2); color: var(--danger); }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            outline: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-light);
+        }
+        
+        .btn i {
+            font-size: 0.9rem;
+        }
+        
+        /* Quick Actions Section */
+        .quick-actions {
+            margin-bottom: 30px;
+        }
+        
+        .action-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .action-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .action-card:hover {
+            transform: scale(1.05);
+        }
+        
+        .action-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .approve-user .action-icon { background-color: var(--primary); }
+        .add-equipment .action-icon { background-color: var(--success); }
+        .manage-bookings .action-icon { background-color: var(--warning); }
+        .view-reports .action-icon { background-color: var(--info); }
+        
+        .action-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .action-desc {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+            
+            .search-bar {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .dashboard-content {
+                padding: 20px 15px;
+            }
+            
+            .header {
+                padding: 0 15px;
+            }
+        }
+    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2 class="logo">RentEase</h2>
+        </div>
+        <ul class="nav-links">
+            <li class="active"><i class="fas fa-th-large"></i> Dashboard</li>
+            <li><a href="{% url 'manage_users' %}">User Management</li>
+            <li><a href="{% url 'manage_equipment' %}">Manage Equipment</li>
+            <li><a href="{% url 'manage_booking' %}">Manage Bookings</a></i>
+            <li><a href="{% url 'create_report' %}">Transactions</li>
+            <li><a href="{% url 'platform_settings' %}"> Platform Settings</li>
+            <li><a href="{% url 'create_delivery_zone' %}"> Delivery Zones</li>
+            <li><a href="{% url 'create_restricted_area' %}"> Restricted Area</li>
+            <li><a href="{% url 'check_delivery_eligibility' %}"> Delivary Eligibility</li>
+
+            <li><a href="{% url 'admin_logout' %}">Logout</a></i>
+        </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search...">
+            </div>
+            <div class="header-right">
+                <div class="notification">
+                    <i class="far fa-bell"></i>
+                    <span class="notification-count">5</span>
+                </div>
+                <div class="profile">
+                    <img src="/api/placeholder/40/40" alt="Admin">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <h1 class="page-title">Dashboard</h1>
+            <p>Welcome, {{ request.user.username }}!</p>
+            {% block content %}
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card users">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">2,845</div>
+                            <div class="stat-label">Total Users</div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i> 12% from last month
+                    </div>
+                </div>
+                
+                <div class="stat-card equipment">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">1,426</div>
+                            <div class="stat-label">Equipment Listed</div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                    </div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i> 8% from last month
+                    </div>
+                </div>
+                
+                <div class="stat-card bookings">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">368</div>
+                            <div class="stat-label">Active Bookings</div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                    </div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i> 5% from last month
+                    </div>
+                </div>
+                
+                <div class="stat-card revenue">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-value">$32.5k</div>
+                            <div class="stat-label">Monthly Revenue</div>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                    </div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i> 18% from last month
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <h2 class="section-title" style="margin-bottom: 20px; color: var(--secondary);">Quick Actions</h2>
+                <div class="action-cards">
+                    <div class="action-card approve-user">
+                        <div class="action-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="action-title">Approve Users</div>
+                        <div class="action-desc">12 pending approvals</div>
+                    </div>
+                    
+                    <div class="action-card add-equipment">
+                        <div class="action-icon">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <div class="action-title">Verify Equipment</div>
+                        <div class="action-desc">8 items need review</div>
+                    </div>
+                    
+                    <div class="action-card manage-bookings">
+                        <div class="action-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="action-title">Resolve Disputes</div>
+                        <div class="action-desc">3 active disputes</div>
+                    </div>
+                    
+                    <div class="action-card view-reports">
+                        <div class="action-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="action-title">Generate Report</div>
+                        <div class="action-desc">Quick revenue summary</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts and Tables -->
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Booking & Revenue Trends</h3>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <!-- Placeholder for chart -->
+                            <img src="/api/placeholder/800/300" alt="Chart" style="max-width: 100%; height: auto;">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Popular Categories</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <!-- Placeholder for chart -->
+                            <img src="/api/placeholder/400/300" alt="Chart" style="max-width: 100%; height: auto;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Activities -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Recent User Registrations</h3>
+                    <button class="btn btn-primary">View All</button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Type</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="user-info">
+                                            <div class="user-avatar">
+                                                <img src="/api/placeholder/40/40" alt="User">
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 500;">John Doe</div>
+                                                <div style="font-size: 0.8rem; color: var(--gray);">john@example.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Vendor</td>
+                                    <td>Feb 25, 2025</td>
+                                    <td><span class="status status-pending">Pending</span></td>
+                                    <td>
+                                        <button class="btn btn-primary" style="padding: 5px 10px; font-size: 0.8rem;">Review</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-info">
+                                            <div class="user-avatar">
+                                                <img src="/api/placeholder/40/40" alt="User">
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 500;">Sarah Johnson</div>
+                                                <div style="font-size: 0.8rem; color: var(--gray);">sarah@example.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Customer</td>
+                                    <td>Feb 24, 2025</td>
+                                    <td><span class="status status-approved">Approved</span></td>
+                                    <td>
+                                        <button class="btn btn-primary" style="padding: 5px 10px; font-size: 0.8rem;">View</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-info">
+                                            <div class="user-avatar">
+                                                <img src="/api/placeholder/40/40" alt="User">
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 500;">Mike Wilson</div>
+                                                <div style="font-size: 0.8rem; color: var(--gray);">mike@example.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Vendor</td>
+                                    <td>Feb 23, 2025</td>
+                                    <td><span class="status status-rejected">Rejected</span></td>
+                                    <td>
+                                        <button class="btn btn-primary" style="padding: 5px 10px; font-size: 0.8rem;">Details</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-info">
+                                            <div class="user-avatar">
+                                                <img src="/api/placeholder/40/40" alt="User">
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 500;">Emily Davis</div>
+                                                <div style="font-size: 0.8rem; color: var(--gray);">emily@example.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Customer</td>
+                                    <td>Feb 22, 2025</td>
+                                    <td><span class="status status-approved">Approved</span></td>
+                                    <td>
+                                        <button class="btn btn-primary" style="padding: 5px 10px; font-size: 0.8rem;">View</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-info">
+                                            <div class="user-avatar">
+                                                <img src="/api/placeholder/40/40" alt="User">
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 500;">Robert Smith</div>
+                                                <div style="font-size: 0.8rem; color: var(--gray);">robert@example.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Vendor</td>
+                                    <td>Feb 21, 2025</td>
+                                    <td><span class="status status-pending">Pending</span></td>
+                                    <td>
+                                        <button class="btn btn-primary" style="padding: 5px 10px; font-size: 0.8rem;">Review</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}
+</html> {% endcomment %}
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary: #3a86ff;
+            --secondary: #ff006e;
+            --success: #38b000;
+            --warning: #ffbe0b;
+            --danger: #ff5400;
+            --dark: #1e293b;
+            --light: #f8f9fa;
+            --sidebar-width: 280px;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: var(--dark);
+            color: white;
+            z-index: 1000;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-menu {
+            padding: 1rem 0;
+        }
+        
+        .menu-item {
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .menu-item i {
+            margin-right: 1rem;
+            min-width: 24px;
+        }
+        
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+        
+        .top-bar {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .notification-badge {
+            position: relative;
+        }
+        
+        .badge-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--secondary);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+        
+        .dashboard-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            height: 100%;
+            transition: transform 0.3s;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card {
+            padding: 1.5rem;
+            border-radius: 10px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat-card.revenue {
+            background: linear-gradient(to right, #3a86ff, #00c6ff);
+        }
+        
+        .stat-card.bookings {
+            background: linear-gradient(to right, #38b000, #5cdb5c);
+        }
+        
+        .stat-card.pending {
+            background: linear-gradient(to right, #ffbe0b, #ffdd00);
+        }
+        
+        .stat-card.reviews {
+            background: linear-gradient(to right, #ff006e, #ff5e78);
+        }
+        
+        .stat-icon {
+            font-size: 2.5rem;
+            opacity: 0.8;
+        }
+        
+        .table-responsive {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .equipment-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .equipment-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+        
+        .equipment-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: white;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-badge.approved {
+            background-color: rgba(56, 176, 0, 0.2);
+            color: var(--success);
+        }
+        
+        .status-badge.pending {
+            background-color: rgba(255, 190, 11, 0.2);
+            color: var(--warning);
+        }
+        
+        .status-badge.rejected {
+            background-color: rgba(255, 84, 0, 0.2);
+            color: var(--danger);
+        }
+        
+        .chart-container {
+            height: 300px;
+        }
+        
+        .toggle-sidebar {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--dark);
+            font-size: 1.5rem;
+        }
+        
+        .section-title {
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 0.5rem;
+            color: var(--primary);
+        }
+        
+        .rating-stars i {
+            color: var(--warning);
+        }
+        
+        @media (max-width: 992px) {
+            .sidebar {
+                margin-left: calc(-1 * var(--sidebar-width));
+            }
+            
+            .sidebar.active {
+                margin-left: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .toggle-sidebar {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-tools me-2"></i>EquipRent</h3>
+            <p class="text-muted mb-0">Admin Dashboard</p>
+        </div>
+        
+        <div class="sidebar-menu">
+            <a href="{% url 'admin_dashboard'%}" class="menu-item active">
+                <i class="fas fa-th-large"></i>
+                Dashboard
+            </a>
+            <a href="{% url 'manage_users' %}" class="menu-item">
+                <i class="fas fa-toolbox"></i>
+                User Management
+            </a>
+            <a href="{% url 'manage_equipment' %}" class="menu-item">
+                <i class="fas fa-calendar-alt"></i>
+                Manage Equipment            </a>
+            <a href="{% url 'manage_booking' %}" class="menu-item">
+                <i class="fas fa-dollar-sign"></i>
+                Manage Booking
+            </a>
+            <a href="{% url 'manage_vendors' %}" class="menu-item">
+                <i class="fas fa-dollar-sign"></i>
+                Manage Vendors
+            </a>
+            <a href="{% url 'create_report'%}" class="menu-item">
+                <i class="fas fa-star"></i>
+                Transactions
+            </a>
+            <a href="{% url 'platform_settings' %}" class="menu-item">
+                <i class="fas fa-cog"></i>
+                Platform Settings
+            </a>
+            <a href="{% url 'create_delivery_zone' %}" class="menu-item">
+                <i class="fas fa-cog"></i>
+                Delivary Zones
+            </a>
+            <a href="{% url 'create_restricted_area' %}" class="menu-item">
+                <i class="fas fa-sign-out-alt"></i>
+                Restricted Area
+            </a>
+            <a href="{% url 'check_delivery_eligibility' %}" class="menu-item">
+                <i class="fas fa-sign-out-alt"></i>
+                Delivary Eligibility
+            </a>
+            <a href="{% url 'admin_logout' %}" class="menu-item">
+                <i class="fas fa-sign-out-alt"></i>
+               Logout
+            </a>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <button class="toggle-sidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="d-flex align-items-center">
+                <div class="notification-badge me-4">
+                   
+                </div>
+                <div class="user-profile">
+                
+                    <div>
+                        <p class="mb-0 fw-bold">Admin</p>
+                        <p class="text-muted mb-0 small">Heavy Equipment Rentals</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% block content %}
+        
+        <!-- Stats Row -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-card revenue">
+                    <div>
+                        <h3 class="mb-0">$8,540</h3>
+                        <p class="mb-0">Monthly Revenue</p>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="stat-card bookings">
+                    <div>
+                        <h3 class="mb-0">24</h3>
+                        <p class="mb-0">Active Bookings</p>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="stat-card pending">
+                    <div>
+                        <h3 class="mb-0">7</h3>
+                        <p class="mb-0">Pending Requests</p>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="stat-card reviews">
+                    <div>
+                        <h3 class="mb-0">4.8</h3>
+                        <p class="mb-0">Average Rating</p>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Bookings and Equipment Row -->
+        <div class="row">
+            
+            
+            <!-- Top Equipment -->
+            
+        
+        <!-- Earnings and Reviews Row -->
+        <div class="row">
+            <!-- Earnings Chart -->
+            <div class="col-lg-8">
+                <div class="dashboard-card">
+                    <h5 class="section-title"><i class="fas fa-chart-line"></i> Earnings Overview</h5>
+                    <div class="chart-container">
+                        <!-- Placeholder for chart -->
+                        <img src="{% static 'image/image8.png'%}" alt="Earnings Chart" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Reviews -->
+            
+        
+        <!-- Recent Notifications -->
+        
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script>
+        // Toggle sidebar on mobile
+        document.querySelector('.toggle-sidebar').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+

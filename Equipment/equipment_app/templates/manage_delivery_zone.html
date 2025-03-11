@@ -1,0 +1,83 @@
+{% extends 'admin_dashboard.html' %}
+ {% block content %}
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Manage Delivery Zones</title>
+     <!-- Bootstrap CDN -->
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+     <!-- Custom CSS -->
+     <style>
+         body {
+             background-color: #f8f9fa;
+             padding: 20px;
+         }
+         .container {
+             max-width: 900px;
+             background: white;
+             padding: 20px;
+             border-radius: 10px;
+             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+         }
+         h1 {
+             text-align: center;
+             margin-bottom: 20px;
+             font-weight: bold;
+             color: #333;
+         }
+         .table th {
+             background-color: #007bff;
+             color: white;
+             text-align: center;
+         }
+         .table td {
+             text-align: center;
+         }
+         .btn-sm {
+             padding: 5px 10px;
+         }
+     </style>
+ </head>
+ <body>
+ 
+ <div class="container">
+     <h1>Manage Delivery Zones</h1>
+     <table class="table table-striped table-hover table-bordered">
+         <thead>
+             <tr>
+                 <th>Zone Name</th>
+                 <th>City</th>
+                 <th>Zip Code</th>
+                 <th>Delivery Fee</th>
+                 <th>Actions</th>
+             </tr>
+         </thead>
+         <tbody>
+             {% for zone in zones %}
+             <tr>
+                 <td>{{ zone.zone_name }}</td>
+                 <td>{{ zone.city }}</td>
+                 <td>{{ zone.zip_code }}</td>
+                 <td>${{ zone.delivery_fee }}</td>
+                 <td>
+                     <a href="{% url 'update_delivery_zone' zone.id %}" class="btn btn-warning btn-sm">Edit</a>
+                 </td>
+             </tr>
+             {% empty %}
+             <tr>
+                 <td colspan="5" class="text-center text-muted">No delivery zones available.</td>
+             </tr>
+             {% endfor %}
+         </tbody>
+     </table>
+ </div>
+ 
+ <!-- Bootstrap JS (Optional, only needed if you use Bootstrap JS components) -->
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+ 
+ </body>
+ </html>
+ 
+{% endblock %}

@@ -1,0 +1,40 @@
+<!-- delivery/create_restricted_area.html -->
+{% extends 'admin_dashboard.html' %}
+ {% block content %}
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Restricted Area</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">Create Restricted Area</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.area_name.label_tag }}
+                {{ form.area_name }}
+            </div>
+            <div class="form-group">
+                {{ form.city.label_tag }}
+                {{ form.city }}
+            </div>
+            <div class="form-group">
+                {{ form.zip_code.label_tag }}
+                {{ form.zip_code }}
+            </div>
+            <div class="form-group">
+                {{ form.reason.label_tag }}
+                {{ form.reason }}
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="{% url 'manage_restricted_area' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>
+{% endblock %}

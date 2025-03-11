@@ -1,0 +1,374 @@
+{% extends 'admin_dashboard.html' %}
+ {% block content %}
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+<h1>Booking Management</h1>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Booking ID</th>
+            <th>Equipment</th>
+            <th>User</th>
+            <th>Status</th>
+            <th>Update Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for booking in bookings %}
+        <tr>
+            <td>{{ booking.id }}</td>
+            <td>{{ booking.equipment.name }}</td>
+            <td>{{ booking.user.user.username }}</td>
+            <td>{{ booking.booking_status }}</td>
+            <td>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                    <select name="booking_status">
+                        <option value="pending" {% if booking.booking_status == "pending" %}selected{% endif %}>Pending</option>
+                        <option value="approved" {% if booking.booking_status == "approved" %}selected{% endif %}>Approved</option>
+                        <option value="dispatched" {% if booking.booking_status == "dispatched" %}selected{% endif %}>Dispatched</option>
+                        <option value="delivered" {% if booking.booking_status == "delivered" %}selected{% endif %}>Delivered</option>
+                        <option value="canceled" {% if booking.booking_status == "canceled" %}selected{% endif %}>Canceled</option>
+                    </select>
+                    <button type="submit">Update</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Pagination Controls -->
+<div>
+    <nav>
+        <ul class="pagination">
+            {% if bookings.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ bookings.previous_page_number }}">Previous</a>
+                </li>
+            {% endif %}
+
+            <li class="page-item disabled">
+                <span class="page-link">Page {{ bookings.number }} of {{ bookings.paginator.num_pages }}</span>
+            </li>
+
+            {% if bookings.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ bookings.next_page_number }}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ bookings.paginator.num_pages }}">Last</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+
+
+</body>
+</html> {% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking Management Dashboard</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #4e73df;
+      --secondary-color: #1cc88a;
+      --danger-color: #e74a3b;
+      --warning-color: #f6c23e;
+      --info-color: #36b9cc;
+    }
+    
+    body {
+      background-color: #f8f9fc;
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+    
+    .dashboard-header {
+      background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .dashboard-header h1 {
+      margin: 0;
+      font-weight: 700;
+      font-size: 2.2rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .dashboard-header h1 i {
+      margin-right: 0.75rem;
+    }
+    
+    .card {
+      border: none;
+      border-radius: 0.5rem;
+      box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+      margin-bottom: 2rem;
+    }
+    
+    .card-header {
+      background-color: white;
+      border-bottom: 1px solid #e3e6f0;
+      font-weight: 700;
+      color: #4e73df;
+      padding: 1rem 1.25rem;
+    }
+    
+    .table-responsive {
+      overflow-x: auto;
+    }
+    
+    .table th {
+      background-color: #f8f9fc;
+      font-weight: 700;
+      color: #5a5c69;
+      border-top: none;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 0.1rem;
+    }
+    
+    .table tbody tr {
+      transition: all 0.2s ease;
+    }
+    
+    .table tbody tr:hover {
+      background-color: rgba(78, 115, 223, 0.05);
+    }
+    
+    .status-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.5rem 0.75rem;
+      border-radius: 30px;
+      text-transform: uppercase;
+      letter-spacing: 0.05rem;
+    }
+    
+    .status-badge.pending {
+      background-color: #f6c23e;
+      color: #856404;
+    }
+    
+    .status-badge.approved {
+      background-color: #1cc88a;
+      color: #155724;
+    }
+    
+    .status-badge.dispatched {
+      background-color: #4e73df;
+      color: #004085;
+    }
+    
+    .status-badge.delivered {
+      background-color: #36b9cc;
+      color: #0c5460;
+    }
+    
+    .status-badge.canceled {
+      background-color: #e74a3b;
+      color: #721c24;
+    }
+    
+    .update-form {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .update-form select, .update-form button {
+      font-size: 0.85rem;
+    }
+    
+    .pagination {
+      justify-content: center;
+      margin-top: 1rem;
+    }
+    
+    .page-link {
+      color: var(--primary-color);
+      border-radius: 0.35rem;
+      margin: 0 0.25rem;
+      border: 1px solid #dddfeb;
+    }
+    
+    .page-link:hover {
+      color: #2e59d9;
+      background-color: #eaecf4;
+      border-color: #dddfeb;
+    }
+    
+    .page-item.disabled .page-link {
+      color: #858796;
+      background-color: #f8f9fc;
+    }
+    
+    .page-item.active .page-link {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    
+    /* Responsive tweaks */
+    @media (max-width: 768px) {
+      .dashboard-header h1 {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid py-4">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+      <h1><i class="fas fa-calendar-check"></i> Booking Management</h1>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>All Bookings</span>
+        <div class="btn-group">
+          <button class="btn btn-sm btn-outline-primary">
+            <i class="fas fa-filter"></i> Filter
+          </button>
+          <button class="btn btn-sm btn-outline-primary">
+            <i class="fas fa-download"></i> Export
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead>
+              <tr>
+                <th>Booking ID</th>
+                <th>Equipment</th>
+                <th>User</th>
+                <th>Status</th>
+                <th>Update Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for booking in bookings %}
+              <tr>
+                <td>#{{ booking.id }}</td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="bg-light rounded-circle p-2 me-2">
+                      <i class="fas fa-toolbox text-primary"></i>
+                    </div>
+                    <div>{{ booking.equipment.name }}</div>
+                  </div>
+                </td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="bg-primary rounded-circle p-2 me-2 text-white">
+                      <i class="fas fa-user"></i>
+                    </div>
+                    <div>{{ booking.user.user.username }}</div>
+                  </div>
+                </td>
+                <td>
+                  <span class="status-badge {{ booking.booking_status }}">
+                    {% if booking.booking_status == "pending" %}
+                      <i class="fas fa-clock me-1"></i>
+                    {% elif booking.booking_status == "approved" %}
+                      <i class="fas fa-check-circle me-1"></i>
+                    {% elif booking.booking_status == "dispatched" %}
+                      <i class="fas fa-truck me-1"></i>
+                    {% elif booking.booking_status == "delivered" %}
+                      <i class="fas fa-box-check me-1"></i>
+                    {% elif booking.booking_status == "canceled" %}
+                      <i class="fas fa-ban me-1"></i>
+                    {% endif %}
+                    {{ booking.booking_status }}
+                  </span>
+                </td>
+                <td>
+                  <form method="POST" class="update-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                    <select name="booking_status" class="form-select form-select-sm">
+                      <option value="pending" {% if booking.booking_status == "pending" %}selected{% endif %}>Pending</option>
+                      <option value="approved" {% if booking.booking_status == "approved" %}selected{% endif %}>Approved</option>
+                      <option value="dispatched" {% if booking.booking_status == "dispatched" %}selected{% endif %}>Dispatched</option>
+                      <option value="delivered" {% if booking.booking_status == "delivered" %}selected{% endif %}>Delivered</option>
+                      <option value="canceled" {% if booking.booking_status == "canceled" %}selected{% endif %}>Canceled</option>
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-primary">
+                      <i class="fas fa-save"></i> Update
+                    </button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- Pagination Controls -->
+        <nav>
+          <ul class="pagination">
+            {% if bookings.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?page=1">
+                  <i class="fas fa-angle-double-left"></i>
+                </a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ bookings.previous_page_number }}">
+                  <i class="fas fa-angle-left"></i>
+                </a>
+              </li>
+            {% endif %}
+            
+            <li class="page-item active">
+              <span class="page-link">Page {{ bookings.number }} of {{ bookings.paginator.num_pages }}</span>
+            </li>
+            
+            {% if bookings.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ bookings.next_page_number }}">
+                  <i class="fas fa-angle-right"></i>
+                </a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ bookings.paginator.num_pages }}">
+                  <i class="fas fa-angle-double-right"></i>
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bootstrap & jQuery JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+{% endblock %}

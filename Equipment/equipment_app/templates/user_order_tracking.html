@@ -1,0 +1,209 @@
+{% extends 'user_dashboard.html' %}
+ {% block content %}
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Tracking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .table-container {
+            margin-top: 50px;
+        }
+        .status-progress {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .status-progress span {
+            flex-grow: 1;
+            text-align: center;
+            padding: 8px;
+            border-radius: 10px;
+            color: white;
+        }
+        .pending { background-color: #ffc107; }
+        .approved { background-color: #17a2b8; }
+        .dispatched { background-color: #007bff; }
+        .delivered { background-color: #28a745; }
+        .canceled { background-color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container table-container">
+        <h1 class="text-center mb-4">Order Tracking</h1>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover text-center shadow-lg">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Equipment</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ booking.id }}</td>
+                        <td>{{ booking.equipment.name }}</td>
+                        <td>
+                            <span class="badge {% if booking.booking_status == 'approved' %}bg-info{% elif booking.booking_status == 'dispatched' %}bg-primary{% elif booking.booking_status == 'delivered' %}bg-success{% elif booking.booking_status == 'canceled' %}bg-danger{% else %}bg-warning{% endif %}">
+                                {{ booking.get_booking_status_display }}
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Order Progress Bar -->
+        
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> {% endcomment %}
+<!-- user/order_tracking.html -->
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Tracking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .table-container {
+            margin-top: 50px;
+        }
+        .status-progress {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+        .status-progress span {
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .status-progress .active {
+            background-color: #007bff;
+            color: white;
+        }
+        .badge {
+            font-size: 14px;
+            padding: 8px 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container table-container">
+        <h1 class="text-center mb-4">Order Tracking</h1>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover text-center shadow-lg">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Equipment</th>
+                        <th>Status</th>
+                        <th>Delivery Tracking</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td>{{ booking.id }}</td>
+                        <td>{{ booking.equipment.name }}</td>
+                        <td>
+                            <span class="badge {% if booking.booking_status == 'approved' %}bg-info{% elif booking.booking_status == 'dispatched' %}bg-primary{% elif booking.booking_status == 'delivered' %}bg-success{% elif booking.booking_status == 'canceled' %}bg-danger{% else %}bg-warning{% endif %}">
+                                {{ booking.get_booking_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if booking.booking_status == 'approved' %}
+                                <a href="#" class="btn btn-sm btn-success">Track Delivery</a>
+                            {% else %}
+                                <span class="text-muted">Not Available</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Order Progress Bar -->
+        <div class="status-progress">
+            <span class="pending {% if booking.booking_status == 'pending' %}active{% endif %}">Pending</span>
+            <span class="approved {% if booking.booking_status == 'approved' %}active{% endif %}">Approved</span>
+            <span class="dispatched {% if booking.booking_status == 'dispatched' %}active{% endif %}">Dispatched</span>
+            <span class="delivered {% if booking.booking_status == 'delivered' %}active{% endif %}">Delivered</span>
+            <span class="canceled {% if booking.booking_status == 'canceled' %}active{% endif %}">Canceled</span>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> {% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Tracking</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .order-details {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            background-color: #f9f9f9;
+        }
+        .order-details h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .order-details p {
+            margin: 10px 0;
+            color: #555;
+        }
+        .badge {
+            font-size: 14px;
+            padding: 6px 10px;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="order-details">
+            <h2>Order Tracking</h2>
+            <p><strong>Booking ID:</strong> {{ booking.id }}</p>
+            <p><strong>Equipment:</strong> {{ booking.equipment.name }}</p>
+            <p><strong>Start Date:</strong> {{ booking.start_date }}</p>
+            <p><strong>End Date:</strong> {{ booking.end_date }}</p>
+            <p><strong>Total Cost:</strong> ₹{{ booking.total_cost }}</p>
+            <p>
+                <strong>Payment Status:</strong>
+                <span class="badge {% if booking.payment_status == 'full' %}bg-success{% elif booking.payment_status == 'partial' %}bg-warning{% else %}bg-danger{% endif %}">
+                    {{ booking.get_payment_status_display }}
+                </span>
+            </p>
+            <p>
+                <strong>Booking Status:</strong>
+                <span class="badge {% if booking.booking_status == 'approved' %}bg-info{% elif booking.booking_status == 'dispatched' %}bg-primary{% elif booking.booking_status == 'delivered' %}bg-success{% elif booking.booking_status == 'canceled' %}bg-danger{% else %}bg-warning{% endif %}">
+                    {{ booking.get_booking_status_display }}
+                </span>
+            </p>
+            <p><strong>Created At:</strong> {{ booking.created_at }}</p>
+            <a href="{% url 'user_dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+{% endblock %}

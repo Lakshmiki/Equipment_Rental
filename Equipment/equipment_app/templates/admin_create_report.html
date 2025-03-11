@@ -1,0 +1,167 @@
+{% extends 'admin_dashboard.html' %}
+ {% block content %}
+{% comment %}  
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Report</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container mt-5">
+    <h2 class="text-center mb-4">Create Report</h2>
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="report_type" class="form-label">Report Type</label>
+        <select name="report_type" id="report_type" class="form-select">
+          <option value="User Activity Report">User Activity Report</option>
+          <option value="Booking Trends Report">Booking Trends Report</option>
+          <option value="Revenue Breakdown Report">Revenue Breakdown Report</option>
+          <option value="Equipment Demand Report">Equipment Demand Report</option>
+          <option value="Fraud Detection Report">Fraud Detection Report</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label for="data" class="form-label">Report Data (JSON)</label>
+        <textarea name="data" id="data" class="form-control" rows="10">
+{
+  "total_users": 150,
+  "active_users": 120,
+  "new_users_last_week": 25,
+  "user_activity": {
+    "logins": 500,
+    "bookings": 75,
+    "reviews": 30
+  }
+}
+        </textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Generate Report</button>
+    </form>
+  </div>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>  {% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Report</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .report-container {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      padding: 90px;
+      max-width: 800px;
+      width: 100%;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h2 {
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+    .form-label {
+      font-weight: 500;
+      color: #34495e;
+    }
+    .form-select, .form-control {
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      padding: 12px;
+      transition: all 0.3s ease;
+    }
+    .form-select:focus, .form-control:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+    }
+    textarea {
+      resize: none;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #3498db, #2980b9);
+      border: none;
+      border-radius: 10px;
+      padding: 12px 24px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 15px rgba(52, 152, 219, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="report-container">
+    <h2 class="text-center mb-4">Create Report</h2>
+    <form method="post">
+      {% csrf_token %}
+      <!-- Report Type -->
+      <div class="mb-4">
+        <label for="report_type" class="form-label">Report Type</label>
+        <select name="report_type" id="report_type" class="form-select">
+          <option value="User Activity Report">User Activity Report</option>
+          <option value="Booking Trends Report">Booking Trends Report</option>
+          <option value="Revenue Breakdown Report">Revenue Breakdown Report</option>
+          <option value="Equipment Demand Report">Equipment Demand Report</option>
+          <option value="Fraud Detection Report">Fraud Detection Report</option>
+        </select>
+      </div>
+
+      <!-- Report Data -->
+      <div class="mb-4">
+        <label for="data" class="form-label">Report Data (JSON)</label>
+        <textarea name="data" id="data" class="form-control" rows="10">
+{
+  "total_users": 150,
+  "active_users": 120,
+  "new_users_last_week": 25,
+  "user_activity": {
+    "logins": 500,
+    "bookings": 75,
+    "reviews": 30
+  }
+}
+        </textarea>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary">Generate Report</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+{% endblock %}

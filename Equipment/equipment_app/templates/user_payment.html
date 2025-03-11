@@ -1,0 +1,231 @@
+
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+    <h1>Payment for Booking #{{ booking.id }}</h1>
+    <p>Total Cost: {{ booking.total_cost }}</p>
+    <button id="rzp-button">Pay Now</button>
+
+    <script>
+        var options = {
+            "key": "{{ razorpay_key_id }}",
+            "amount": "{{ amount }}",
+            "currency": "{{ currency }}",
+            "name": "Your Company Name",
+            "description": "Payment for Booking #{{ booking.id }}",
+            "order_id": "{{ order_id }}",
+            "handler": function (response) {
+                window.location.href = "{% url 'payment_success' booking.id %}";
+            },
+            "prefill": {
+                "name": "{{ booking.user.user.get_full_name }}",
+                "email": "{{ booking.user.user.email }}",
+            },
+            "theme": {
+                "color": "#F37254"
+            }
+        };
+        var rzp1 = new Razorpay(options);
+        document.getElementById('rzp-button').onclick = function(e){
+            rzp1.open();
+            e.preventDefault();
+        }
+    </script>
+</body>
+</html> {% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Your Payment</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .payment-container {
+      max-width: 550px;
+      width: 100%;
+    }
+    .payment-card {
+      border: none;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+    .card-header {
+      background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+      color: white;
+      padding: 25px 30px;
+      border-bottom: none;
+    }
+    .booking-id {
+      display: inline-block;
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    .card-body {
+      padding: 30px;
+    }
+    .payment-details {
+      background-color: #f8fafc;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+    .amount {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .currency {
+      font-size: 18px;
+      vertical-align: super;
+      color: #64748b;
+      margin-left: 2px;
+    }
+    .secure-badge {
+      display: flex;
+      align-items: center;
+      color: #64748b;
+      font-size: 14px;
+      margin-top: 20px;
+    }
+    .payment-btn {
+      background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+      border: none;
+      padding: 14px;
+      font-weight: 600;
+      font-size: 18px;
+      transition: all 0.3s ease;
+    }
+    .payment-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+    }
+    .payment-icons {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .payment-icons i {
+      font-size: 24px;
+      margin: 0 8px;
+      color: #64748b;
+    }
+    .order-summary {
+      margin-bottom: 15px;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px dashed #e2e8f0;
+      color: #64748b;
+    }
+    .summary-row:last-child {
+      border-bottom: none;
+    }
+    .total-row {
+      font-weight: 600;
+      color: #1e293b;
+      border-top: 2px solid #e2e8f0;
+      padding-top: 10px;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container payment-container">
+    <div class="card payment-card">
+      <div class="card-header text-center">
+        <span class="booking-id">Booking #{{ booking.id }}</span>
+        <h1 class="mb-0">Complete Your Payment</h1>
+        <p class="mb-0 mt-2">Secure payment processing with Razorpay</p>
+      </div>
+      <div class="card-body">
+        <div class="payment-details">
+          <div class="order-summary">
+            <div class="summary-row">
+              <span>Booking Reference</span>
+              <span>#{{ booking.id }}</span>
+            </div>
+            <div class="summary-row">
+              <span>Service Fee</span>
+              <span>{{ booking.total_cost }}</span>
+            </div>
+            <div class="summary-row total-row">
+              <span>Total Amount</span>
+              <span class="amount">{{ booking.total_cost }}<span class="currency">{{ currency }}</span></span>
+            </div>
+          </div>
+        </div>
+        
+        <button id="rzp-button" class="btn payment-btn text-white w-100">
+          <i class="fas fa-lock me-2"></i>Pay Securely
+        </button>
+        
+        <div class="secure-badge text-center">
+          <i class="fas fa-shield-alt me-2"></i>
+          Your payment information is processed securely
+        </div>
+        
+        <div class="payment-icons">
+          <i class="fab fa-cc-visa"></i>
+          <i class="fab fa-cc-mastercard"></i>
+          <i class="fab fa-cc-amex"></i>
+          <i class="fab fa-cc-discover"></i>
+          <i class="fab fa-google-pay"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Razorpay Script -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script>
+    var options = {
+      "key": "{{ razorpay_key_id }}",
+      "amount": "{{ amount }}",
+      "currency": "{{ currency }}",
+      "name": "Your Company Name",
+      "description": "Payment for Booking #{{ booking.id }}",
+      "order_id": "{{ order_id }}",
+      "handler": function (response) {
+        window.location.href = "{% url 'payment_success' booking.id %}";
+      },
+      "prefill": {
+        "name": "{{ booking.user.user.get_full_name }}",
+        "email": "{{ booking.user.user.email }}",
+      },
+      "theme": {
+        "color": "#6366F1"
+      }
+    };
+    var rzp1 = new Razorpay(options);
+    document.getElementById('rzp-button').onclick = function(e){
+      rzp1.open();
+      e.preventDefault();
+    }
+  </script>
+</body>
+</html>

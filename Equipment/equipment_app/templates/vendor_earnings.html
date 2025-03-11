@@ -1,0 +1,116 @@
+{% extends 'vendor_dashboard.html' %}
+ {% block content %}
+
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earnings</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">Earnings</h1>
+        {% if transactions %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Booking ID</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Created At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                    <tr>
+                        <td>{{ transaction.id }}</td>
+                        <td>{{ transaction.booking.id }}</td>
+                        <td>{{ transaction.amount }}</td>
+                        <td>
+                            <span class="badge {% if transaction.status == 'completed' %}bg-success{% else %}bg-warning{% endif %}">
+                                {{ transaction.get_status_display }}
+                            </span>
+                        </td>
+                        <td>{{ transaction.created_at }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="alert alert-info" role="alert">
+                No transactions found.
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html> {% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earnings</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .badge {
+            font-size: 14px;
+            padding: 6px 10px;
+            border-radius: 12px;
+        }
+        .table {
+            margin-top: 20px;
+        }
+        .alert-success {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">Earnings</h1>
+
+        <!-- Total Earnings Summary -->
+        <div class="alert alert-success" role="alert">
+            Total Earnings: ₹{{ total_earnings }}
+        </div>
+
+        <!-- Transactions Table -->
+        {% if transactions %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Booking ID</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Created At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                    <tr>
+                        <td>{{ transaction.id }}</td>
+                        <td>{{ transaction.booking.id }}</td>
+                        <td>₹{{ transaction.amount }}</td>
+                        <td>
+                            <span class="badge {% if transaction.status == 'completed' %}bg-success{% else %}bg-warning{% endif %}">
+                                {{ transaction.get_status_display }}
+                            </span>
+                        </td>
+                        <td>{{ transaction.created_at }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="alert alert-info" role="alert">
+                No transactions found.
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
+{% endblock %}

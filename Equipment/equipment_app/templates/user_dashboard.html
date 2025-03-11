@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment Rental</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Custom Hero Section */
+.hero {
+    height: 60vh;
+    background: url('https://source.unsplash.com/1600x900/?equipment,rent') center/cover;
+    position: relative;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.hero .container {
+    position: relative;
+    z-index: 2;
+}
+
+/* Card Styling */
+.card {
+    transition: 0.3s;
+    border: none;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Navbar */
+@media (max-width: 768px) {
+    .hero {
+        height: 50vh;
+    }
+}
+
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">EquipRent</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'user_dashboard'%}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'profile' %}">My profile</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'list_equipment_user' %}">List Equipments</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'booked_equipment' %}">booked Equipments</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'logout' %}">Logout</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% block content %}
+
+    
+{% comment %} <div class="booked-equipment">
+    <h2 class="mb-4">Booked Equipment</h2>
+    {% if bookings %}
+        {% for booking in bookings %}
+        <div class="booking-card">
+            <h5>{{ booking.equipment.name }}</h5>
+            <p><strong>Booking ID:</strong> {{ booking.id }}</p>
+            <p><strong>Start Date:</strong> {{ booking.start_date }}</p>
+            <p><strong>End Date:</strong> {{ booking.end_date }}</p>
+            <p><strong>Total Cost:</strong> ₹{{ booking.total_cost }}</p>
+            <p>
+                <strong>Status:</strong>
+                <span class="badge {% if booking.booking_status == 'approved' %}bg-info{% elif booking.booking_status == 'dispatched' %}bg-primary{% elif booking.booking_status == 'delivered' %}bg-success{% elif booking.booking_status == 'canceled' %}bg-danger{% else %}bg-warning{% endif %}">
+                    {{ booking.get_booking_status_display }}
+                </span>
+            </p>
+            <a href="{% url 'order_tracking' booking.id %}" class="btn btn-primary">Track Order</a>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            You have no booked equipment.
+        </div>
+    {% endif %}
+</div> {% endcomment %}
+
+
+    <header class="hero text-center text-white d-flex align-items-center">
+        <div class="container">
+            
+            <h1 class="display-4">Rent Quality Equipment with Ease</h1>
+            <p class="lead">Find and book the best rental equipment at affordable prices.</p>
+            <p> Hi,{{user.username }}</p>
+            <a href="#equipment" class="btn btn-lg btn-primary">Explore Now</a>
+        </div>
+    </header>
+
+    <!-- Equipment Listing -->
+    <section id="equipment" class="container my-5">
+        <div class="row mb-4">
+            
+        </div>
+
+        <div class="row">
+            <!-- Equipment Card -->
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    
+                    <div class="card-body">
+                        <h5 class="card-title">Camera Lens</h5>
+                        <p class="card-text">High-quality DSLR lens for professional photography.</p>
+                        <p class="fw-bold">$10 per hour | $50 per day</p>
+                        <a href="#" class="btn btn-primary w-100">Rent Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    
+                    <div class="card-body">
+                        <h5 class="card-title">Electric Drill</h5>
+                        <p class="card-text">Powerful electric drill for all your DIY projects.</p>
+                        <p class="fw-bold">$8 per hour | $40 per day</p>
+                        <a href="#" class="btn btn-primary w-100">Rent Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    
+                    <div class="card-body">
+                        <h5 class="card-title">Mountain Bike</h5>
+                        <p class="card-text">High-performance mountain bike for adventure rides.</p>
+                        <p class="fw-bold">$15 per hour | $70 per day</p>
+                        <a href="#" class="btn btn-primary w-100">Rent Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3">
+        <p class="mb-0">© 2025 EquipRent. All Rights Reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+{% endblock %}
