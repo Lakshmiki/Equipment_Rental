@@ -57,6 +57,17 @@ class Equipment(models.Model):
 
     def __str__(self):
         return self.name
+class Avail_Location(models.Model):
+    equipment = models.OneToOneField(Equipment, on_delete=models.CASCADE)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    address = models.CharField(max_length=255)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Available Location for {self.equipment.name}"
+
+
     
 class Booking(models.Model):
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE)
@@ -76,10 +87,24 @@ class Booking(models.Model):
         ('delivered', 'Delivered'),
         ('canceled', 'Canceled'),
     ],default='pending' )
+    STATUS_CHOICES = [
+    ('Pending', 'Pending'),
+    ('Approved', 'Approved'),
+    ('Declined', 'Declined'),
+]
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Booking {self.id} for {self.equipment.name}"
+class DeliveryLocation(models.Model):
+    booking = models.OneToOneField(Booking, on_delete=models.CASCADE)
+    address = models.CharField(max_length=255)
+   
+
+    def __str__(self):
+        return f"Delivery Location for Booking {self.booking.id}"
+
     
 class Report(models.Model):
     report_type = models.CharField(max_length=50)
@@ -89,15 +114,56 @@ class Report(models.Model):
     def __str__(self):
         return f"{self.report_type} Report"
 
-class PlatformSettings(models.Model):
-    rental_pricing = models.JSONField()
-    commission_rate = models.DecimalField(max_digits=5, decimal_places=2)
-    promotional_campaigns = models.JSONField()
-    email_settings = models.JSONField()
-    booking_rules = models.TextField()
+# class PlatformSettings(models.Model):
+#     rental_pricing = models.JSONField()
+#     commission_rate = models.DecimalField(max_digits=5, decimal_places=2)
+#     promotional_campaigns = models.JSONField()
+#     email_settings = models.JSONField()
+#     booking_rules = models.TextField()
+
+#     def __str__(self):
+#         return "Platform Settings"
+import json
+
+class Platform_Settings(models.Model):
+    rental_pricing = models.JSONField(default=dict)  # Store rental pricing rules
+    commission_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)  # Commission rate in percentage
+    promotional_campaigns = models.JSONField(default=list)  # Store promotional campaigns
+    email_settings = models.JSONField(default=dict)  # Store email settings
+    booking_rules = models.TextField(default="")  # Store booking and cancellation rules
 
     def __str__(self):
         return "Platform Settings"
+
+    def add_promotion(self, name, discount_type, discount_value, conditions):
+        """
+        Add a new promotional campaign to the promotional_campaigns field.
+        """
+        promotion = {
+            'name': name,
+            'discount_type': discount_type,
+            'discount_value': discount_value,
+            'conditions': conditions,
+        }
+        campaigns = json.loads(self.promotional_campaigns) if self.promotional_campaigns else []
+        campaigns.append(promotion)
+        self.promotional_campaigns = json.dumps(campaigns)
+        self.save()
+
+    def get_active_promotions(self):
+        """
+        Get active promotions based on the current date.
+        """
+        from datetime import datetime
+        today = datetime.today().date()
+        campaigns = json.loads(self.promotional_campaigns) if self.promotional_campaigns else []
+        active_promotions = []
+        for campaign in campaigns:
+            valid_from = datetime.strptime(campaign['conditions']['valid_from'], '%Y-%m-%d').date()
+            valid_to = datetime.strptime(campaign['conditions']['valid_to'], '%Y-%m-%d').date()
+            if valid_from <= today <= valid_to:
+                active_promotions.append(campaign)
+        return active_promotions
 
 class Review(models.Model):
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE)

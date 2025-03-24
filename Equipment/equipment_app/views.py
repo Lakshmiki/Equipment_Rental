@@ -14,6 +14,9 @@ import razorpay
 from django.views.decorators.csrf import csrf_exempt
 from django.views import View
 from django.core.paginator import Paginator
+from django.urls import reverse
+from django.views.decorators.cache import never_cache,cache_control
+from django.contrib.auth.decorators import login_required
 client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
 
@@ -114,7 +117,9 @@ def user_logout(request):
     messages.success(request, "You have been logged out successfully.")
     return redirect('login')
 
-@login_required
+@login_required(login_url='login')
+@never_cache
+@cache_control(no_store=True, must_revalidate=True)
 def user_dashboard(request):
     # Get or create the UserProfile instance for the logged-in user
     # user_profile, created = UserProfile.objects.get_or_create(user=request.user)
@@ -140,7 +145,18 @@ def booked_equipment(request):
         'bookings': bookings
     }
     return render(request, 'booked_equipment.html', context)
+@login_required
+def cancel_booking(request, booking_id):
+    # Fetch the booking
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user.userprofile)
 
+    # Check if the booking can be canceled (e.g., only pending or approved bookings can be canceled)
+    if booking.booking_status in ['pending', 'approved']:
+        booking.booking_status = 'canceled'
+        booking.save()
+
+    # Redirect to the user's bookings page or dashboard
+    return redirect('booked_equipment')
 
 @login_required
 def profile(request):
@@ -170,23 +186,55 @@ def equipment_search(request):
     return render(request, 'user_equipment_list.html', {'equipment_list': equipment_list})
 
 
+# @login_required
+# def book_equipment(request, equipment_id):
+#     equipment = get_object_or_404(Equipment, id=equipment_id)
+    
+#     if request.method == 'POST':
+#         form = BookingForm(request.POST)
+#         if form.is_valid():
+#             booking = form.save(commit=False)
+#             booking.equipment = equipment
+#             booking.user = request.user.userprofile
+#             booking.total_cost = calculate_total_cost(equipment, booking.start_date, booking.end_date)
+#             booking.payment_status = 'pending'
+#             booking.booking_status = 'pending'
+#             booking.save()
+#             return redirect('payment', booking_id=booking.id)
+#     else:
+#         form = BookingForm()
+#     return render(request, 'user_book_equipment.html', {'form': form, 'equipment': equipment})
 @login_required
 def book_equipment(request, equipment_id):
     equipment = get_object_or_404(Equipment, id=equipment_id)
+
     if request.method == 'POST':
-        form = BookingForm(request.POST)
-        if form.is_valid():
-            booking = form.save(commit=False)
+        booking_form = BookingForm(request.POST)
+        location_form = DeliveryLocationForm(request.POST)
+
+        if booking_form.is_valid() and location_form.is_valid():
+            # Save booking
+            booking = booking_form.save(commit=False)
             booking.equipment = equipment
             booking.user = request.user.userprofile
             booking.total_cost = calculate_total_cost(equipment, booking.start_date, booking.end_date)
             booking.payment_status = 'pending'
             booking.booking_status = 'pending'
             booking.save()
+            delivery_location = location_form.save(commit=False)
+            delivery_location.booking = booking
+            delivery_location.save()
+
             return redirect('payment', booking_id=booking.id)
     else:
-        form = BookingForm()
-    return render(request, 'user_book_equipment.html', {'form': form, 'equipment': equipment})
+        booking_form = BookingForm()
+        location_form = DeliveryLocationForm()
+
+    return render(request, 'user_book_equipment.html', {
+        'booking_form': booking_form,
+        'location_form': location_form,
+        'equipment': equipment,
+    })
 def calculate_total_cost(equipment, start_date, end_date):
     rental_days = (end_date - start_date).days
     if rental_days >= 7:
@@ -195,6 +243,113 @@ def calculate_total_cost(equipment, start_date, end_date):
         return equipment.price_per_day * rental_days
     else:
         return equipment.price_per_hour
+
+# @login_required
+# def book_equipment(request, equipment_id):
+#     equipment = get_object_or_404(Equipment, id=equipment_id)
+
+#     if request.method == 'POST':
+#         booking_form = BookingForm(request.POST)
+#         location_form = DeliveryLocationForm(request.POST)
+
+#         if booking_form.is_valid() and location_form.is_valid():
+#             # Save booking
+#             booking = booking_form.save(commit=False)
+#             booking.equipment = equipment
+#             booking.user = request.user.userprofile
+#             booking.total_cost = calculate_total_cost(equipment, booking.start_date, booking.end_date)
+
+#             # Apply promotions
+#             promotions = get_active_promotions()
+#             discount = calculate_discount(booking, promotions)
+#             booking.total_cost -= discount
+
+#             booking.payment_status = 'pending'
+#             booking.booking_status = 'pending'
+#             booking.save()
+#             delivery_location = location_form.save(commit=False)
+#             delivery_location.booking = booking
+#             delivery_location.save()
+
+#             return redirect('payment', booking_id=booking.id)
+#     else:
+#         booking_form = BookingForm()
+#         location_form = DeliveryLocationForm()
+
+#     return render(request, 'user_book_equipment.html', {
+#         'booking_form': booking_form,
+#         'location_form': location_form,
+#         'equipment': equipment,
+#     })
+
+# def calculate_total_cost(equipment, start_date, end_date):
+#     rental_days = (end_date - start_date).days
+#     if rental_days >= 7:
+#         return equipment.price_per_week * (rental_days // 7)
+#     elif rental_days >= 1:
+#         return equipment.price_per_day * rental_days
+#     else:
+#         return equipment.price_per_hour
+# def get_active_promotions():
+#     # Fetch the active promotions from PlatformSettings
+#     settings = Platform_Settings.objects.first()
+#     if settings and settings.promotional_campaigns:
+#         promotions = json.loads(settings.promotional_campaigns)
+#         # Filter active promotions based on valid dates
+#         today = datetime.today().date()
+#         active_promotions = []
+#         for promotion in promotions:
+#             valid_from = datetime.strptime(promotion['conditions']['valid_from'], '%Y-%m-%d').date()
+#             valid_to = datetime.strptime(promotion['conditions']['valid_to'], '%Y-%m-%d').date()
+#             if valid_from <= today <= valid_to:
+#                 active_promotions.append(promotion)
+#         return active_promotions
+#     return []
+# def calculate_discount(booking, promotions):
+#     total_discount = 0
+#     rental_days = (booking.end_date - booking.start_date).days
+
+#     for promotion in promotions:
+#         # Check if the promotion is valid for this booking
+#         if rental_days >= promotion['conditions']['min_stay']:
+#             if promotion['discount_type'] == 'percentage':
+#                 total_discount += booking.total_cost * (promotion['discount_value'] / 100)
+#             else:
+#                 total_discount += promotion['discount_value']
+#     return total_discount
+
+@login_required
+@user_passes_test(is_admin)
+def manage_promotions(request):
+    # Fetch the first PlatformSettings object or create a new one if it doesn't exist
+    settings, created = Platform_Settings.objects.get_or_create()
+
+    if request.method == 'POST':
+        # Parse the existing promotional campaigns
+        promotions = json.loads(settings.promotional_campaigns) if settings.promotional_campaigns else []
+
+        # Add the new promotion
+        new_promotion = {
+            'name': request.POST.get('name'),
+            'discount_type': request.POST.get('discount_type'),
+            'discount_value': float(request.POST.get('discount_value')),
+            'conditions': {
+                'min_stay': int(request.POST.get('min_stay', 0)),
+                'valid_from': request.POST.get('valid_from'),
+                'valid_to': request.POST.get('valid_to'),
+            }
+        }
+        promotions.append(new_promotion)
+
+        # Save the updated promotions
+        settings.promotional_campaigns = json.dumps(promotions)
+        settings.save()
+        return redirect('manage_promotions')
+
+    # Load existing promotions
+    promotions = json.loads(settings.promotional_campaigns) if settings.promotional_campaigns else []
+
+    return render(request, 'admin_manage_promotions.html', {'promotions': promotions})
     
 # @login_required
 # def payment(request, booking_id):
@@ -339,16 +494,54 @@ def PaymentSuccessView(request, booking_id):
     return redirect('order_tracking', booking_id=booking.id)
 
 
+# @login_required
+# def order_tracking(request, booking_id):
+#     # Fetch the booking for the logged-in user
+#     booking = get_object_or_404(Booking, id=booking_id, user=request.user.userprofile)
+    
+#     # Pass the booking details to the template
+#     context = {
+#         'booking': booking
+#     }
+#     return render(request, 'user_order_tracking.html', context)
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import Booking, DeliveryLocation
+
 @login_required
 def order_tracking(request, booking_id):
     # Fetch the booking for the logged-in user
     booking = get_object_or_404(Booking, id=booking_id, user=request.user.userprofile)
     
-    # Pass the booking details to the template
+    # Fetch the delivery location (if available)
+    delivery_location = DeliveryLocation.objects.filter(booking=booking).first()
+
+    # Pass the booking and delivery location to the template
     context = {
-        'booking': booking
+        'booking': booking,
+        'delivery_location': delivery_location,
     }
     return render(request, 'user_order_tracking.html', context)
+
+def add_location(request, equipment_id):
+    equipment = get_object_or_404(Equipment, id=equipment_id)
+    
+    # Check if location already exists
+    location, created = Location.objects.get_or_create(equipment=equipment)
+    
+    if request.method == 'POST':
+        form = LocationForm(request.POST, instance=location)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Location added/updated successfully.")
+            return redirect('order_tracking', booking_id=equipment.id)
+    else:
+        form = LocationForm(instance=location)
+
+    return render(request, 'add_location.html', {'form': form, 'equipment': equipment})
+
+
+
 @login_required
 def leave_review(request, equipment_id):
     equipment = get_object_or_404(Equipment, id=equipment_id)
@@ -368,6 +561,17 @@ def equipment_details(request, equipment_id):
     equipment = get_object_or_404(Equipment, id=equipment_id)
     reviews = Review.objects.filter(equipment=equipment).order_by('-created_at')
     return render(request, 'user_equipment_details.html', {'equipment': equipment, 'reviews': reviews})
+def equipment_location(request, equipment_id):
+    equipment = get_object_or_404(Equipment, id=equipment_id)
+    try:
+        location = Location.objects.get(equipment=equipment)
+    except Location.DoesNotExist:
+        location = None
+
+    return render(request, 'equipment_location.html', {
+        'equipment': equipment,
+        'location': location
+    })
 
 def index(request):
     return render(request,'index.html')
@@ -547,22 +751,45 @@ def download_report(request, report_id):
 #     else:
 #         form = PlatformSettingsForm(instance=settings)
 #     return render(request, 'admin_platform_settings.html', {'form': form})
+# @login_required
+# @user_passes_test(is_admin)
+# def platform_settings(request):
+#     # Fetch the first PlatformSettings object or create a new one if it doesn't exist
+#     settings, created = PlatformSettings.objects.get_or_create()
+
+#     if request.method == 'POST':
+#         form = PlatformSettingsForm(request.POST, instance=settings)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('platform_settings_display')  # Redirect to the same page to display updated data
+#     else:
+#         form = PlatformSettingsForm(instance=settings)
+
+#     return render(request, 'admin_platform_settings.html', {'form': form})
+
 @login_required
 @user_passes_test(is_admin)
 def platform_settings(request):
-    # Fetch the first PlatformSettings object or create a new one if it doesn't exist
-    settings, created = PlatformSettings.objects.get_or_create()
-
+    # Retrieve the single PlatformSettings instance or create a new one if none exists
+    settings = PlatformSettings.objects.first()
+    
+    if not settings:
+        settings = PlatformSettings.objects.create(
+            rental_pricing={}, 
+            commission_rate=0.00, 
+            promotional_campaigns={}, 
+            email_settings={}, 
+            booking_rules=""
+        )
     if request.method == 'POST':
         form = PlatformSettingsForm(request.POST, instance=settings)
         if form.is_valid():
             form.save()
-            return redirect('platform_settings_display')  # Redirect to the same page to display updated data
+            return redirect(reverse('platform_settings'))  # Redirect to the same page after saving
     else:
         form = PlatformSettingsForm(instance=settings)
 
     return render(request, 'admin_platform_settings.html', {'form': form})
-
 
 @login_required
 @user_passes_test(is_admin)
@@ -660,23 +887,63 @@ def edit_vendor_profile(request):
         form = VendorProfileForm(instance=vendor_profile)
     return render(request, 'vendor_edit_profile.html', {'form': form})
 
+# @login_required
+# def add_equipment(request):
+#     if request.method == 'POST':
+#         form = EquipmentForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             equipment = form.save(commit=False)
+#             equipment.vendor = request.user.vendorprofile
+#             equipment.save()
+#             return redirect('vendor_dashboard')
+#     else:
+#         form = EquipmentForm()
+#     return render(request, 'vendor_add_equipment.html', {'form': form})
 @login_required
 def add_equipment(request):
     if request.method == 'POST':
-        form = EquipmentForm(request.POST, request.FILES)
-        if form.is_valid():
-            equipment = form.save(commit=False)
+        equipment_form = EquipmentForm(request.POST, request.FILES)
+        location_form = AvailableLocationForm(request.POST)
+
+        if equipment_form.is_valid() and location_form.is_valid():
+            # Save equipment
+            equipment = equipment_form.save(commit=False)
             equipment.vendor = request.user.vendorprofile
             equipment.save()
+
+            # Save available location
+            available_location = location_form.save(commit=False)
+            available_location.equipment = equipment
+            available_location.save()
+
             return redirect('vendor_dashboard')
     else:
-        form = EquipmentForm()
-    return render(request, 'vendor_add_equipment.html', {'form': form})
+        equipment_form = EquipmentForm()
+        location_form = AvailableLocationForm()
+    return render(request, 'vendor_add_equipment.html', {
+        'equipment_form': equipment_form,
+        'location_form': location_form,
+    })
 
+# @login_required
+# def equipment_list(request):
+#     equipments = Equipment.objects.filter(vendor=request.user.vendorprofile)
+#     return render(request, 'vendor_equipment_list.html', {'equipments': equipments})
 @login_required
 def equipment_list(request):
+    # Fetch equipment for the logged-in vendor
     equipments = Equipment.objects.filter(vendor=request.user.vendorprofile)
-    return render(request, 'vendor_equipment_list.html', {'equipments': equipments})
+    
+    # Fetch available locations for each piece of equipment
+    equipment_data = []
+    for equipment in equipments:
+        locations = Avail_Location.objects.filter(equipment=equipment)
+        equipment_data.append({
+            'equipment': equipment,
+            'locations': locations,
+        })
+    
+    return render(request, 'vendor_equipment_list.html', {'equipment_data': equipment_data})
 
 @login_required
 def edit_equipment(request, equipment_id):

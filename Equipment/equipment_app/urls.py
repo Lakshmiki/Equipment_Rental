@@ -13,10 +13,13 @@ urlpatterns = [
     path('list_equipment_user/',views.equipment_list_user,name='list_equipment_user'),
     path('equipment_search/', views.equipment_search, name='equipment_search'),
     path('book_equipment/<int:equipment_id>/', views.book_equipment, name='book_equipment'),
+    path('cancel_booking/<int:booking_id>/', views.cancel_booking, name='cancel_booking'),
     path('payment/<int:booking_id>/', views.create_payment, name='payment'),
     # path('payment/<int:booking_id>/', CreatePaymentView.as_view(), name='create_payment'),
     path('payment_success/<int:booking_id>/', views.PaymentSuccessView, name='payment_success'),
     path('order_tracking/<int:booking_id>/', views.order_tracking, name='order_tracking'),
+    path('equipment_location/', views.equipment_location, name='equipment_location'),
+    path('add_location/<int:equipment_id>/', views.add_location, name='add_location'),
     path('leave_review/<int:equipment_id>/', views.leave_review, name='leave_review'),
     path('equipment/<int:equipment_id>/', views.equipment_details, name='equipment_details'),
     path('booked_equipment/',views.booked_equipment,name='booked_equipment'),
@@ -36,7 +39,7 @@ urlpatterns = [
     path('create_report/', views.create_report, name='create_report'),
     path('generate_report/', views.generate_report, name='generate_report'),
     path('download_report/<int:report_id>/', views.download_report, name='download_report'),
-    path('platform_settings/', views.platform_settings, name='platform_settings'),
+    path('manage_promotions/', views.manage_promotions, name='manage_promotions'),
     path('platform_settings_display/',views.platform_display_settings,name='platform_settings_display'),
     
     

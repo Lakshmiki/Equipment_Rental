@@ -1,6 +1,6 @@
 {% extends 'user_dashboard.html' %}
  {% block content %}
- <!DOCTYPE html>
+ {% comment %} <!DOCTYPE html>
  <html lang="en">
  <head>
      <meta charset="UTF-8">
@@ -8,7 +8,7 @@
      <title>User Profile</title>
      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
      {% comment %} <link rel="stylesheet" href="{% static 'css/style.css' %}"> {% endcomment %}
-     <style>
+     {% comment %} <style>
          body {
              background-color: #f8f9fa;
          }
@@ -36,6 +36,7 @@
      </style>
  </head>
  <body>
+    <br><br>
      <div class="container">
          <div class="profile-card">
              <h2 class="text-center mb-4">User Profile</h2>
@@ -72,5 +73,212 @@
  
      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
  </body>
- </html>
+ </html> {% endcomment %} 
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .profile-container {
+            max-width: 800px;
+            margin: 40px auto;
+        }
+        
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border-radius: 15px 15px 0 0;
+            padding: 10px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 5px solid white;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .profile-body {
+            background-color: white;
+            border-radius: 0 0 15px 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .profile-info {
+            margin-bottom: 30px;
+        }
+        
+        .info-row {
+            display: flex;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            align-items: center;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            flex: 0 0 150px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .info-value {
+            flex: 1;
+            color: #495057;
+        }
+        
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(67, 97, 238, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            margin-right: 15px;
+        }
+        
+        .btn-custom {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-custom:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-danger-custom {
+            background-color: #e63946;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            color: white;
+        }
+        
+        .btn-danger-custom:hover {
+            background-color: #d62828;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(230, 57, 70, 0.3);
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container profile-container">
+        <div class="profile-header">
+            <div class="text-center">
+                <div class="profile-avatar mx-auto">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h2>{{ profile.user.username }}</h2>
+                <p class="mb-0">Member since {{ profile.user.date_joined|date:"F d, Y" }}</p>
+            </div>
+        </div>
+        
+        <div class="profile-body">
+            <div class="profile-info">
+                <div class="info-row">
+                    <div class="info-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="info-label">Username</div>
+                    <div class="info-value">{{ profile.user.username }}</div>
+                </div>
+                
+                <div class="info-row">
+                    <div class="info-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="info-label">Email</div>
+                    <div class="info-value">{{ profile.user.email }}</div>
+                </div>
+                
+                <div class="info-row">
+                    <div class="info-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="info-label">Phone Number</div>
+                    <div class="info-value">{{ profile.phone_number }}</div>
+                </div>
+                
+                <div class="info-row">
+                    <div class="info-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="info-label">Address</div>
+                    <div class="info-value">{{ profile.address }}</div>
+                </div>
+                
+                {% if profile.id_proof %}
+                <div class="info-row">
+                    <div class="info-icon">
+                        <i class="fas fa-id-card"></i>
+                    </div>
+                    <div class="info-label">ID Proof</div>
+                    <div class="info-value">
+                        <a href="{{ profile.id_proof.url }}" class="btn btn-sm btn-custom">
+                            <i class="fas fa-download me-2"></i>Download
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="action-buttons">
+                <a href="{% url 'edit_profile' %}" class="btn btn-lg btn-custom">
+                    <i class="fas fa-edit me-2"></i>Edit Profile
+                </a>
+                <a href="{% url 'logout' %}" class="btn btn-lg btn-danger-custom">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
 {% endblock %}

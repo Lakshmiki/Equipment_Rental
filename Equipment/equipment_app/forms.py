@@ -1,5 +1,5 @@
 from django import forms
-from .models import UserProfile,VendorProfile,Equipment,Booking,Report,PlatformSettings,Review,DeliveryZone,RestrictedArea,DeliveryRequest
+from .models import UserProfile,VendorProfile,Equipment,Booking,Report,Platform_Settings,Review,DeliveryZone,RestrictedArea,DeliveryRequest,Avail_Location,DeliveryLocation
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.core.exceptions import ValidationError
@@ -141,6 +141,21 @@ class EquipmentForm(forms.ModelForm):
             'is_approved': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'images': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
+class AvailableLocationForm(forms.ModelForm):
+    class Meta:
+        model = Avail_Location
+        fields = ['address', 'latitude', 'longitude']
+
+class DeliveryLocationForm(forms.ModelForm):
+    class Meta:
+        model = DeliveryLocation
+        fields = ['address']  # Only include the address field
+        widgets = {
+            'address': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter delivery address'}),
+        }
+        labels = {
+            'address': 'Delivery Address',
+        }
 
 class BookingForm(forms.ModelForm):
     class Meta:
@@ -171,16 +186,12 @@ class ReportForm(forms.ModelForm):
         model = Report
         fields = ['report_type', 'data']
 
+
 class PlatformSettingsForm(forms.ModelForm):
     class Meta:
-        model = PlatformSettings
+        model = Platform_Settings
         fields = ['rental_pricing', 'commission_rate', 'promotional_campaigns', 'email_settings', 'booking_rules']
-        widgets = {
-            'rental_pricing': forms.Textarea(attrs={'rows': 3}),
-            'promotional_campaigns': forms.Textarea(attrs={'rows': 3}),
-            'email_settings': forms.Textarea(attrs={'rows': 3}),
-            'booking_rules': forms.Textarea(attrs={'rows': 5}),
-        }
+
 class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review

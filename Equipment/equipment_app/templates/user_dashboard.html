@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{% comment %} <!DOCTYPE html>
 <html lang="en">
     {% load static %}
 <head>
@@ -74,31 +74,6 @@
     {% block content %}
 
     
-{% comment %} <div class="booked-equipment">
-    <h2 class="mb-4">Booked Equipment</h2>
-    {% if bookings %}
-        {% for booking in bookings %}
-        <div class="booking-card">
-            <h5>{{ booking.equipment.name }}</h5>
-            <p><strong>Booking ID:</strong> {{ booking.id }}</p>
-            <p><strong>Start Date:</strong> {{ booking.start_date }}</p>
-            <p><strong>End Date:</strong> {{ booking.end_date }}</p>
-            <p><strong>Total Cost:</strong> ₹{{ booking.total_cost }}</p>
-            <p>
-                <strong>Status:</strong>
-                <span class="badge {% if booking.booking_status == 'approved' %}bg-info{% elif booking.booking_status == 'dispatched' %}bg-primary{% elif booking.booking_status == 'delivered' %}bg-success{% elif booking.booking_status == 'canceled' %}bg-danger{% else %}bg-warning{% endif %}">
-                    {{ booking.get_booking_status_display }}
-                </span>
-            </p>
-            <a href="{% url 'order_tracking' booking.id %}" class="btn btn-primary">Track Order</a>
-        </div>
-        {% endfor %}
-    {% else %}
-        <div class="alert alert-info" role="alert">
-            You have no booked equipment.
-        </div>
-    {% endif %}
-</div> {% endcomment %}
 
 
     <header class="hero text-center text-white d-flex align-items-center">
@@ -112,50 +87,45 @@
     </header>
 
     <!-- Equipment Listing -->
-    <section id="equipment" class="container my-5">
-        <div class="row mb-4">
-            
-        </div>
+<section id="equipment" class="container my-5">
+    <div class="row mb-4"></div>
 
-        <div class="row">
-            <!-- Equipment Card -->
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    
-                    <div class="card-body">
-                        <h5 class="card-title">Camera Lens</h5>
-                        <p class="card-text">High-quality DSLR lens for professional photography.</p>
-                        <p class="fw-bold">$10 per hour | $50 per day</p>
-                        <a href="#" class="btn btn-primary w-100">Rent Now</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    
-                    <div class="card-body">
-                        <h5 class="card-title">Electric Drill</h5>
-                        <p class="card-text">Powerful electric drill for all your DIY projects.</p>
-                        <p class="fw-bold">$8 per hour | $40 per day</p>
-                        <a href="#" class="btn btn-primary w-100">Rent Now</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    
-                    <div class="card-body">
-                        <h5 class="card-title">Mountain Bike</h5>
-                        <p class="card-text">High-performance mountain bike for adventure rides.</p>
-                        <p class="fw-bold">$15 per hour | $70 per day</p>
-                        <a href="#" class="btn btn-primary w-100">Rent Now</a>
-                    </div>
+    <div class="row">
+        <!-- Equipment Card -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <img src="{% static 'image/lens-photography.jpg'%}" class="card-img-top" alt="Camera Lens">
+                <div class="card-body">
+                    <h5 class="card-title">Camera Lens</h5>
+                    <p class="card-text">High-quality DSLR lens for professional photography.</p>
+                    <p class="fw-bold">$10 per hour | $50 per day</p>
                 </div>
             </div>
         </div>
-    </section>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <img src="{% static 'image/images_8.jpg'%}" class="card-img-top" alt="Electric Drill">
+                <div class="card-body">
+                    <h5 class="card-title">Electric Drill</h5>
+                    <p class="card-text">Powerful electric drill for all your DIY projects.</p>
+                    <p class="fw-bold">$8 per hour | $40 per day</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <img src="{% static 'image/images_9.jpeg'%}" class="card-img-top" alt="Mountain Bike">
+                <div class="card-body">
+                    <h5 class="card-title">Mountain Bike</h5>
+                    <p class="card-text">High-performance mountain bike for adventure rides.</p>
+                    <p class="fw-bold">$15 per hour | $70 per day</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
     <!-- Footer -->
     <footer class="bg-dark text-white text-center py-3">
@@ -165,4 +135,602 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-{% endblock %}
+{% endblock %} {% endcomment %}
+
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ERMS - Equipment Rental Management System</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --secondary: #1e40af;
+      --accent: #60a5fa;
+      --light: #f8fafc;
+      --dark: #1e293b;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--dark);
+    }
+    
+    .hero-section {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      padding: 100px 0;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hero-section::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url('/api/placeholder/1200/600');
+      background-size: cover;
+      opacity: 0.1;
+      z-index: 0;
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .hero-title {
+      font-weight: 800;
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .feature-card {
+      border-radius: 12px;
+      border: none;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+      transition: transform 0.3s, box-shadow 0.3s;
+      height: 100%;
+      overflow: hidden;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    
+    .feature-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--primary);
+      background: rgba(37, 99, 235, 0.1);
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      border-radius: 6px;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--secondary);
+      border-color: var(--secondary);
+    }
+    
+    .btn-outline-light {
+      border-width: 2px;
+      font-weight: 600;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+    }
+    
+    .section-title {
+      font-weight: 700;
+      position: relative;
+      margin-bottom: 2.5rem;
+      padding-bottom: 1rem;
+    }
+    
+    .section-title:after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 80px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+    
+    .section-title.text-center:after {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    
+    .navbar {
+      background-color: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .navbar-brand {
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    .stat-box {
+      text-align: center;
+      padding: 2rem;
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+    }
+    
+    .stat-box h2 {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-box p {
+      font-size: 1.1rem;
+      color: var(--dark);
+      margin-bottom: 0;
+    }
+    
+    .cta-section {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      padding: 80px 0;
+      position: relative;
+    }
+    
+    footer {
+      background-color: var(--dark);
+      color: white;
+      padding: 60px 0 30px;
+    }
+    
+    .footer-links h5 {
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    
+    .footer-links ul {
+      padding-left: 0;
+      list-style: none;
+    }
+    
+    .footer-links ul li {
+      margin-bottom: 0.75rem;
+    }
+    
+    .footer-links ul li a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .footer-links ul li a:hover {
+      color: white;
+    }
+    
+    .social-links a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      margin-right: 10px;
+      color: white;
+      transition: background-color 0.3s;
+    }
+    
+    .social-links a:hover {
+      background-color: var(--primary);
+    }
+    
+    .testimony-card {
+      padding: 2rem;
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+      margin-bottom: 1.5rem;
+    }
+    
+    .testimony-card .quote {
+      font-size: 1.1rem;
+      font-style: italic;
+      margin-bottom: 1.5rem;
+    }
+    
+    .client-info {
+      display: flex;
+      align-items: center;
+    }
+    
+    .client-info img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 15px;
+    }
+    
+    .client-details h5 {
+      margin-bottom: 0;
+      font-weight: 600;
+    }
+    
+    .client-details p {
+      margin-bottom: 0;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-primary fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">{{user.username }}</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="{% url 'user_dashboard'%}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="{% url 'profile'%}">My profile</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="{% url 'list_equipment_user'%}">Equipments</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="{% url 'booked_equipment'%}"> Booked Equipments</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link active" href="#contact">Contact</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="{% url 'logout'%}">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  {% block content %}
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container hero-content">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <h1 class="hero-title">Revolutionize Your Equipment Rental Business</h1>
+          <p class="lead mb-4">Streamline operations, enhance customer experience, and boost profitability with our advanced Equipment Rental Management System.</p>
+          <div class="d-flex flex-wrap gap-2">
+            <a href="#" class="btn btn-outline-light">Learn More</a>
+          </div>
+        </div>
+        <div class="col-lg-6 d-none d-lg-block text-center">
+          <img src="{% static 'image/image6.jpg'%}" alt="ERMS Dashboard Preview" class="img-fluid rounded-3 shadow-lg mt-4 mt-lg-0">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="py-5 py-md-6" id="features">
+    <div class="container">
+      <h2 class="section-title text-center">Powerful Features</h2>
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+          <div class="feature-card card p-4">
+            <div class="feature-icon mx-auto">
+              <i class="fas fa-boxes"></i>
+            </div>
+            <h3 class="h5 text-center">Inventory Management</h3>
+            <p class="text-center mb-0">Track equipment availability, maintenance schedules, and lifecycle in real-time.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="feature-card card p-4">
+            <div class="feature-icon mx-auto">
+              <i class="fas fa-exchange-alt"></i>
+            </div>
+            <h3 class="h5 text-center">Seamless Transactions</h3>
+            <p class="text-center mb-0">Process rentals, returns, and payments with minimal steps and maximum efficiency.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="feature-card card p-4">
+            <div class="feature-icon mx-auto">
+              <i class="fas fa-users"></i>
+            </div>
+            <h3 class="h5 text-center">Customer Management</h3>
+            <p class="text-center mb-0">Maintain detailed customer profiles and rental history for personalized service.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="feature-card card p-4">
+            <div class="feature-icon mx-auto">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h3 class="h5 text-center">Analytics & Reports</h3>
+            <p class="text-center mb-0">Gain valuable insights with comprehensive analytics and customizable reports.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="py-5 bg-light">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="stat-box">
+            <h2>98%</h2>
+            <p>Operational Efficiency</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-box">
+            <h2>30%</h2>
+            <p>Cost Reduction</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-box">
+            <h2>24/7</h2>
+            <p>System Availability</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefits Section -->
+  <section class="py-5 py-md-6" id="benefits">
+    <div class="container">
+      <h2 class="section-title">Why Choose ERMS?</h2>
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <img src="{% static 'image/carosel_2.jpg'%}" alt="ERMS Benefits" class="img-fluid rounded-3 shadow">
+        </div>
+        <div class="col-lg-6">
+          <div class="ps-lg-4 mt-4 mt-lg-0">
+            <div class="d-flex mb-4">
+              <div class="me-3 text-primary">
+                <i class="fas fa-check-circle fa-2x"></i>
+              </div>
+              <div>
+                <h4>Streamlined Operations</h4>
+                <p>Automate and optimize your rental processes to reduce manual workload and minimize errors.</p>
+              </div>
+            </div>
+            <div class="d-flex mb-4">
+              <div class="me-3 text-primary">
+                <i class="fas fa-check-circle fa-2x"></i>
+              </div>
+              <div>
+                <h4>Enhanced Customer Experience</h4>
+                <p>Provide seamless booking, transparent pricing, and quick service to delight your customers.</p>
+              </div>
+            </div>
+            <div class="d-flex mb-4">
+              <div class="me-3 text-primary">
+                <i class="fas fa-check-circle fa-2x"></i>
+              </div>
+              <div>
+                <h4>Real-time Visibility</h4>
+                <p>Get instant insights into equipment availability, maintenance status, and financial performance.</p>
+              </div>
+            </div>
+            <div class="d-flex">
+              <div class="me-3 text-primary">
+                <i class="fas fa-check-circle fa-2x"></i>
+              </div>
+              <div>
+                <h4>Scalable Solution</h4>
+                <p>Grow your rental business with a system that scales with your needs across multiple locations.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="py-5 py-md-6 bg-light" id="testimonials">
+    <div class="container">
+      <h2 class="section-title text-center">What Our Clients Say</h2>
+      <div class="row">
+        <div class="col-lg-4">
+          <div class="testimony-card">
+            <div class="quote">
+              "ERMS transformed our rental operations. We've reduced processing time by 70% and increased customer satisfaction significantly."
+            </div>
+            <div class="client-info">
+              <img src="/api/placeholder/100/100" alt="Client">
+              <div class="client-details">
+                <h5>John Williams</h5>
+                <p>CEO, Construction Rentals Inc.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="testimony-card">
+            <div class="quote">
+              "The analytics feature alone was worth the investment. We identified opportunities we never knew existed and optimized our inventory accordingly."
+            </div>
+            <div class="client-info">
+              <img src="/api/placeholder/100/100" alt="Client">
+              <div class="client-details">
+                <h5>Sarah Miller</h5>
+                <p>Operations Manager, EventPro</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="testimony-card">
+            <div class="quote">
+              "Customer management has never been easier. We now have complete visibility into rental history and can provide personalized service consistently."
+            </div>
+            <div class="client-info">
+              <img src="/api/placeholder/100/100" alt="Client">
+              <div class="client-details">
+                <h5>Michael Chen</h5>
+                <p>Director, Tech Equipment Rentals</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  {% endblock %}
+
+
+
+  <!-- Footer -->
+  <footer id="contact">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 mb-4 mb-lg-0">
+          <h4 class="text-white mb-4">ERMS</h4>
+          <p>Advanced digital solution designed to facilitate and streamline the process of renting equipment across various industries.</p>
+          <div class="social-links mt-4">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-4 mb-4 mb-md-0 footer-links">
+          <h5>Company</h5>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Our Team</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Blog</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-2 col-md-4 mb-4 mb-md-0 footer-links">
+          <h5>Product</h5>
+          <ul>
+            <li><a href="#">Features</a></li>
+            <li><a href="#">Pricing</a></li>
+            <li><a href="#">Integrations</a></li>
+            <li><a href="#">Roadmap</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-4 col-md-4 footer-links">
+          <h5>Contact Us</h5>
+          <ul>
+            <li><i class="fas fa-map-marker-alt me-2"></i> 123 Business Avenue, Tech City</li>
+            <li><i class="fas fa-phone me-2"></i> (123) 456-7890</li>
+            <li><i class="fas fa-envelope me-2"></i> info@erms.com</li>
+          </ul>
+        </div>
+      </div>
+      <hr class="mt-4 mb-4" style="border-color: rgba(255,255,255,0.1);">
+      <div class="row">
+        <div class="col-md-6 text-center text-md-start">
+          <p class="mb-0">&copy; 2025 ERMS. All rights reserved.</p>
+        </div>
+        <div class="col-md-6 text-center text-md-end">
+          <a href="#" class="text-white me-3">Privacy Policy</a>
+          <a href="#" class="text-white">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+    
+
+
+    {% comment %} <header class="hero text-center text-white d-flex align-items-center">
+        <div class="container">
+            
+            <h1 class="display-4">Rent Quality Equipment with Ease</h1>
+            <p class="lead">Find and book the best rental equipment at affordable prices.</p>
+            <p> Hi,{{user.username }}</p>
+            <a href="#equipment" class="btn btn-lg btn-primary">Explore Now</a>
+        </div>
+    </header>
+
+    <!-- Equipment Listing -->
+<section id="equipment" class="container my-5">
+    <div class="row mb-4"></div>
+
+    <div class="row">
+        <!-- Equipment Card -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <img src="{% static 'image/lens-photography.jpg'%}" class="card-img-top" alt="Camera Lens">
+                <div class="card-body">
+                    <h5 class="card-title">Camera Lens</h5>
+                    <p class="card-text">High-quality DSLR lens for professional photography.</p>
+                    <p class="fw-bold">$10 per hour | $50 per day</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <img src="{% static 'image/images_8.jpg'%}" class="card-img-top" alt="Electric Drill">
+                <div class="card-body">
+                    <h5 class="card-title">Electric Drill</h5>
+                    <p class="card-text">Powerful electric drill for all your DIY projects.</p>
+                    <p class="fw-bold">$8 per hour | $40 per day</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <img src="{% static 'image/images_9.jpeg'%}" class="card-img-top" alt="Mountain Bike">
+                <div class="card-body">
+                    <h5 class="card-title">Mountain Bike</h5>
+                    <p class="card-text">High-performance mountain bike for adventure rides.</p>
+                    <p class="fw-bold">$15 per hour | $70 per day</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3">
+        <p class="mb-0">© 2025 EquipRent. All Rights Reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> {% endcomment %}
+

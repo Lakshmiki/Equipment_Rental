@@ -60,7 +60,7 @@
                  <td>{{ zone.zone_name }}</td>
                  <td>{{ zone.city }}</td>
                  <td>{{ zone.zip_code }}</td>
-                 <td>${{ zone.delivery_fee }}</td>
+                 <td>{{ zone.delivery_fee }}</td>
                  <td>
                      <a href="{% url 'update_delivery_zone' zone.id %}" class="btn btn-warning btn-sm">Edit</a>
                  </td>

@@ -1,21 +1,6 @@
 {% extends 'vendor_dashboard.html' %}
- {% block content %}
-{% comment %} <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<body>
-    <h1>Add Equipment</h1>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Add Equipment</button>
-</form>
-</body>
-</html> {% endcomment %}
+{% block content %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -81,6 +66,12 @@
             text-align: center;
             margin-top: 10px;
         }
+        .location-section {
+            background-color: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -94,62 +85,65 @@
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 
+                <!-- Equipment Details -->
                 <div class="row mb-4">
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="id_vendor" class="form-label">Vendor</label>
-                            {{ form.vendor }}
+                            {{ equipment_form.vendor }}
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="id_name" class="form-label">Equipment Name</label>
-                            {{ form.name }}
+                            {{ equipment_form.name }}
                         </div>
                     </div>
                 </div>
                 
                 <div class="mb-3">
                     <label for="id_category" class="form-label">Category</label>
-                    {{ form.category }}
+                    {{ equipment_form.category }}
                 </div>
                 
                 <div class="mb-4">
                     <label for="id_specifications" class="form-label">Specifications</label>
-                    {{ form.specifications }}
+                    {{ equipment_form.specifications }}
                     <div class="form-text">Include detailed specifications to help renters understand what they're getting.</div>
                 </div>
                 
+                <!-- Pricing Details -->
                 <div class="pricing-section">
                     <h4 class="mb-3"><i class="fas fa-tag me-2"></i>Pricing Details</h4>
                     <div class="row">
                         <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="id_price_per_hour" class="form-label">Price per Hour ($)</label>
-                                {{ form.price_per_hour }}
+                                {{ equipment_form.price_per_hour }}
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="id_price_per_day" class="form-label">Price per Day ($)</label>
-                                {{ form.price_per_day }}
+                                {{ equipment_form.price_per_day }}
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="id_price_per_week" class="form-label">Price per Week ($)</label>
-                                {{ form.price_per_week }}
+                                {{ equipment_form.price_per_week }}
                             </div>
                         </div>
                     </div>
                 </div>
                 
+                <!-- Availability Status -->
                 <div class="status-section">
                     <h4 class="mb-3"><i class="fas fa-check-circle me-2"></i>Availability Status</h4>
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-check mb-3">
-                                {{ form.is_available }}
+                                {{ equipment_form.is_available }}
                                 <label class="form-check-label" for="id_is_available">
                                     Available for Rent
                                 </label>
@@ -157,7 +151,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-check mb-3">
-                                {{ form.is_not_available }}
+                                {{ equipment_form.is_not_available }}
                                 <label class="form-check-label" for="id_is_not_available">
                                     Not Available
                                 </label>
@@ -165,7 +159,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-check mb-3">
-                                {{ form.is_approved }}
+                                {{ equipment_form.is_approved }}
                                 <label class="form-check-label" for="id_is_approved">
                                     Approved
                                 </label>
@@ -174,15 +168,42 @@
                     </div>
                 </div>
                 
+                <!-- Available Locations -->
+                <div class="location-section">
+                    <h4 class="mb-3"><i class="fas fa-map-marker-alt me-2"></i>Available Locations</h4>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="id_address" class="form-label">Address</label>
+                                {{ location_form.address }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="id_latitude" class="form-label">Latitude</label>
+                                {{ location_form.latitude }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="id_longitude" class="form-label">Longitude</label>
+                                {{ location_form.longitude }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Equipment Images -->
                 <div class="mb-4">
                     <label for="id_images" class="form-label"><i class="fas fa-images me-2"></i>Upload Equipment Images</label>
-                    {{ form.images }}
+                    {{ equipment_form.images }}
                     <div class="image-preview mt-2">
                         <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-2"></i>
                         <p class="text-muted mb-0">Drag and drop files here or click to browse</p>
                     </div>
                 </div>
                 
+                <!-- Submit Button -->
                 <div class="text-center">
                     <button type="submit" class="btn btn-primary btn-submit btn-lg">
                         <i class="fas fa-plus-circle me-2"></i>Add Equipment

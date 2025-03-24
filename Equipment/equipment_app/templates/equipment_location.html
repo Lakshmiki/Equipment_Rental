@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Equipment Location</title>
+  <!-- Leaflet CSS and JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body>
+  <h1>{{ equipment.name }} Location</h1>
+
+  {% if location %}
+    <button class="btn btn-info mt-3" onclick="showLocation()">View Equipment Location</button>
+    <div id="map" style="height: 400px; width: 100%; display: none;"></div>
+  {% else %}
+    <p class="text-danger">Location not available for this equipment.</p>
+  {% endif %}
+
+  <!-- JavaScript Section -->
+  <script>
+    function showLocation() {
+      const mapDiv = document.getElementById('map');
+      mapDiv.style.display = 'block';
+
+      const map = L.map('map').setView([{{ location.latitude }}, {{ location.longitude }}], 12);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+
+      L.marker([{{ location.latitude }}, {{ location.longitude }}])
+        .addTo(map)
+        .bindPopup('<b>{{ equipment.name }}</b><br>Location: ({{ location.latitude }}, {{ location.longitude }})')
+        .openPopup();
+    }
+  </script>
+</body>
+</html>

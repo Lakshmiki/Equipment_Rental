@@ -822,6 +822,7 @@
 </html> {% endcomment %}
 <!DOCTYPE html>
 <html lang="en">
+    {% load static %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1090,7 +1091,7 @@
         </div>
         
         <div class="sidebar-menu">
-            <a href="#" class="menu-item active">
+            <a href="{% url 'vendor_dashboard' %}" class="menu-item active">
                 <i class="fas fa-th-large"></i>
                 Dashboard
             </a>
@@ -1195,7 +1196,7 @@
         </div>
         
         <!-- Recent Bookings and Equipment Row -->
-        <div class="row">
+        {% comment %} <div class="row">
             <!-- Recent Bookings -->
             <div class="col-lg-8">
                 <div class="dashboard-card">
@@ -1297,10 +1298,10 @@
                         <a href="#" class="btn btn-outline-primary btn-sm">View All Bookings</a>
                     </div>
                 </div>
-            </div>
+            </div> {% endcomment %}
             
             <!-- Top Equipment -->
-            <div class="col-lg-4">
+            {% comment %} <div class="col-lg-4">
                 <div class="dashboard-card">
                     <h5 class="section-title"><i class="fas fa-trophy"></i> Top Performing Equipment</h5>
                     
@@ -1350,7 +1351,7 @@
                 </div>
             </div>
         </div>
-        
+         {% endcomment %}
         <!-- Earnings and Reviews Row -->
         <div class="row">
             <!-- Earnings Chart -->
@@ -1359,13 +1360,13 @@
                     <h5 class="section-title"><i class="fas fa-chart-line"></i> Earnings Overview</h5>
                     <div class="chart-container">
                         <!-- Placeholder for chart -->
-                        <img src="/api/placeholder/800/300" alt="Earnings Chart" class="img-fluid">
+                        <img src="{% static 'image/image8.png'%}" alt="Earnings Chart" class="img-fluid">
                     </div>
                 </div>
             </div>
             
             <!-- Recent Reviews -->
-            <div class="col-lg-4">
+            {% comment %} <div class="col-lg-4">
                 <div class="dashboard-card">
                     <h5 class="section-title"><i class="fas fa-comments"></i> Recent Reviews</h5>
                     
@@ -1428,10 +1429,10 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> {% endcomment %}
         
         <!-- Recent Notifications -->
-        <div class="row">
+        {% comment %} <div class="row">
             <div class="col-12">
                 <div class="dashboard-card">
                     <h5 class="section-title"><i class="fas fa-bell"></i> Recent Notifications</h5>
@@ -1485,7 +1486,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> {% endcomment %}
     
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
